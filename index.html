@@ -1,190 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio</title>
+
+<style>
+:root {
+  --bg:#0f172a;
+  --text:#e5e7eb;
+  --accent:#38bdf8;
+}
+
+body {
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+/* ===== LOADER ===== */
+#loader{
+  position:fixed;
+  inset:0;
+  background:#020617;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  transition:.6s;
+}
+#loader.fade-out{opacity:0;visibility:hidden}
+
+.spinner{
+  width:60px;
+  height:60px;
+  border:6px solid #1e293b;
+  border-top:6px solid var(--accent);
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== HEADER ===== */
+header{
+  position:fixed;
+  width:100%;
+  top:0;
+  left:0;
+  padding:15px 40px;
+  display:flex;
+  justify-content:space-between;
+  background:transparent;
+  transition:.3s;
+}
+header.scrolled{background:#020617}
+
+nav a{
+  margin-left:20px;
+  color:white;
+  text-decoration:none;
+}
+nav a.active{color:var(--accent)}
+
+#menu-icon{display:none}
+
+/* ===== SECTIONS ===== */
+section{
+  min-height:100vh;
+  padding:120px 10%;
+}
+
+.hero span{color:var(--accent)}
+
+/* ===== SKILL CIRCLES ===== */
+.skills{
+  display:flex;
+  gap:40px;
+}
+.skill-circle{
+  position:relative;
+  width:140px;
+  height:140px;
+}
+svg{
+  transform:rotate(-90deg);
+}
+circle{
+  fill:none;
+  stroke-width:12;
+}
+.bg{
+  stroke:#1e293b;
+}
+.progress-circle{
+  stroke:var(--accent);
+  stroke-linecap:round;
+  transition:1s;
+}
+.percentage-value{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+}
+</style>
+</head>
+<body>
+
+<!-- ===== LOADER ===== -->
+<div id="loader">
+  <div class="spinner"></div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header id="header">
+  <h2>Portfolio</h2>
+  <nav id="navbar">
+    <a href="#home">Home</a>
+    <a href="#skills">Skills</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<!-- ===== HOME ===== -->
+<section id="home" class="hero">
+  <h1>Hello I'm <span>Subhash</span></h1>
+  <p>Frontend Developer • Backend Developer • MERN Stack Developer</p>
+</section>
+
+<!-- ===== SKILLS ===== -->
+<section id="skills">
+<h2>My Skills</h2>
+<div class="skills">
+
+<div class="skill-circle" data-percent="90">
+<svg width="140" height="140">
+  <circle class="bg" cx="70" cy="70" r="60"/>
+  <circle class="progress-circle" cx="70" cy="70" r="60"/>
+</svg>
+<div class="percentage-value">0%</div>
+</div>
+
+<div class="skill-circle" data-percent="80">
+<svg width="140" height="140">
+  <circle class="bg" cx="70" cy="70" r="60"/>
+  <circle class="progress-circle" cx="70" cy="70" r="60"/>
+</svg>
+<div class="percentage-value">0%</div>
+</div>
+
+<div class="skill-circle" data-percent="75">
+<svg width="140" height="140">
+  <circle class="bg" cx="70" cy="70" r="60"/>
+  <circle class="progress-circle" cx="70" cy="70" r="60"/>
+</svg>
+<div class="percentage-value">0%</div>
+</div>
+
+</div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section id="contact">
+<h2>Contact Me</h2>
+<p>email@example.com</p>
+</section>
+
 <script>
-/* ==================== HEADER SCROLL ==================== */
-const header = document.getElementById('header');
-const menuIcon = document.getElementById('menu-icon');
-const navbar = document.getElementById('navbar');
+document.addEventListener("DOMContentLoaded",()=>{
 
-window.addEventListener('scroll', () => {
-  header.classList.toggle('scrolled', window.scrollY > 100);
+const header=document.getElementById("header");
+window.addEventListener("scroll",()=>{
+  header.classList.toggle("scrolled",scrollY>80);
 });
 
-/* ==================== MENU TOGGLE ==================== */
-menuIcon.addEventListener('click', () => {
-  navbar.classList.toggle('active');
-  menuIcon.classList.toggle('bx-x');
-});
+/* ACTIVE LINK */
+const sections=document.querySelectorAll("section");
+const links=document.querySelectorAll("nav a");
 
-document.querySelectorAll('.navbar a').forEach(link => {
-  link.addEventListener('click', () => {
-    navbar.classList.remove('active');
-    menuIcon.classList.remove('bx-x');
+window.addEventListener("scroll",()=>{
+  let current="";
+  sections.forEach(sec=>{
+    if(scrollY>=sec.offsetTop-120) current=sec.id;
+  });
+  links.forEach(link=>{
+    link.classList.toggle("active",link.getAttribute("href").includes(current));
   });
 });
 
-/* ==================== ACTIVE NAV LINK ==================== */
-const sections = document.querySelectorAll('section');
-const navLinks = document.querySelectorAll('header nav a');
+/* SKILL ANIMATION */
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(!entry.isIntersecting) return;
 
-window.addEventListener('scroll', () => {
-  let current = '';
-  sections.forEach(section => {
-    if (scrollY >= section.offsetTop - 150) {
-      current = section.id;
-    }
-  });
+    const circle=entry.target;
+    const progress=circle.querySelector(".progress-circle");
+    const value=circle.querySelector(".percentage-value");
+    const percent=+circle.dataset.percent;
 
-  navLinks.forEach(link => {
-    link.classList.toggle('active', link.getAttribute('href').includes(current));
-  });
-});
+    const radius=60;
+    const circumference=2*Math.PI*radius;
 
-/* ==================== SMOOTH SCROLL ==================== */
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', e => {
-    e.preventDefault();
-    const target = document.querySelector(anchor.getAttribute('href'));
-    if (target) {
-      window.scrollTo({
-        top: target.offsetTop - 80,
-        behavior: 'smooth'
-      });
-    }
-  });
-});
+    progress.style.strokeDasharray=circumference;
+    progress.style.strokeDashoffset=circumference;
 
-/* ==================== TYPED.JS ==================== */
-new Typed('.text-animation span', {
-  strings: [
-    'Frontend Developer',
-    'Backend Developer',
-    'MERN Stack Developer',
-    'Software Developer'
-  ],
-  typeSpeed: 80,
-  backSpeed: 60,
-  backDelay: 1500,
-  loop: true
-});
-
-/* ==================== SKILL CIRCLE ANIMATION ==================== */
-function animateSkills() {
-  const circles = document.querySelectorAll('.skill-circle');
-
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const circle = entry.target;
-        const progress = circle.querySelector('.progress-circle');
-        const value = circle.querySelector('.percentage-value');
-        const percent = parseInt(circle.dataset.percent);
-        const radius = 60;
-        const circumference = 2 * Math.PI * radius;
-
-        progress.style.strokeDasharray = circumference;
-        progress.style.strokeDashoffset = circumference;
-
-        setTimeout(() => {
-          progress.style.strokeDashoffset =
-            circumference - (percent / 100) * circumference;
-        }, 100);
-
-        let count = 0;
-        const interval = setInterval(() => {
-          value.textContent = count;
-          if (count >= percent) clearInterval(interval);
-          count++;
-        }, 20);
-
-        observer.unobserve(circle);
-      }
+    requestAnimationFrame(()=>{
+      progress.style.strokeDashoffset=circumference-(percent/100)*circumference;
     });
-  }, { threshold: 0.5 });
 
-  circles.forEach(c => observer.observe(c));
-}
+    let count=0;
+    const timer=setInterval(()=>{
+      value.textContent=count+"%";
+      if(count>=percent) clearInterval(timer);
+      count++;
+    },15);
 
-document.addEventListener('DOMContentLoaded', animateSkills);
-
-/* ==================== CUSTOM CURSOR (FIXED) ==================== */
-if (!window.matchMedia('(pointer: coarse)').matches) {
-  const cursor = document.createElement('div');
-  const dot = document.createElement('div');
-
-  cursor.className = 'custom-cursor';
-  dot.className = 'custom-cursor-dot';
-
-  document.body.append(cursor, dot);
-
-  let x = 0, y = 0, dx = 0, dy = 0;
-
-  document.addEventListener('mousemove', e => {
-    x = e.clientX;
-    y = e.clientY;
+    observer.unobserve(circle);
   });
+},{threshold:.5});
 
-  function moveCursor() {
-    dx += (x - dx) * 0.1;
-    dy += (y - dy) * 0.1;
-    cursor.style.left = `${dx}px`;
-    cursor.style.top = `${dy}px`;
-    dot.style.left = `${x}px`;
-    dot.style.top = `${y}px`;
-    requestAnimationFrame(moveCursor);
-  }
-  moveCursor();
+document.querySelectorAll(".skill-circle").forEach(c=>observer.observe(c));
 
-  document.querySelectorAll(
-    'a, button, input, textarea, .portfolio-box, .tech-item, .skill-item, .project-box'
-  ).forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      cursor.classList.add('cursor-hover');
-      dot.classList.add('cursor-hover');
-    });
-    el.addEventListener('mouseleave', () => {
-      cursor.classList.remove('cursor-hover');
-      dot.classList.remove('cursor-hover');
-    });
-  });
-}
-
-/* ==================== THEME TOGGLE ==================== */
-const themeToggle = document.getElementById('theme-toggle');
-const themeIcon = document.getElementById('theme-icon');
-
-const savedTheme = localStorage.getItem('theme') || 'dark';
-document.documentElement.setAttribute('data-theme', savedTheme);
-updateThemeIcon(savedTheme);
-
-themeToggle.addEventListener('click', () => {
-  const theme = document.documentElement.getAttribute('data-theme');
-  const newTheme = theme === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
-  updateThemeIcon(newTheme);
 });
 
-function updateThemeIcon(theme) {
-  themeIcon.className = theme === 'dark' ? 'bx bx-moon' : 'bx bx-sun';
-}
-
-/* ==================== LOADER FIX (MAIN + FAILSAFE) ==================== */
-window.addEventListener('load', () => {
-  const loader = document.getElementById('loader');
-  if (!loader) return;
-
-  setTimeout(() => {
-    loader.classList.add('fade-out');
-    setTimeout(() => loader.remove(), 600);
-  }, 500);
+/* LOADER FIX */
+window.addEventListener("load",()=>{
+  const loader=document.getElementById("loader");
+  loader.classList.add("fade-out");
+  setTimeout(()=>loader.remove(),600);
 });
 
-// 🔥 FAILSAFE (never trap user)
-setTimeout(() => {
-  const loader = document.getElementById('loader');
-  if (loader) loader.remove();
-}, 5000);
-
-/* ==================== CONSOLE LOG ==================== */
-console.log('%c🚀 Portfolio Loaded Successfully!',
-  'color:#667eea;font-size:18px;font-weight:bold;');
+/* SAFETY REMOVE */
+setTimeout(()=>{
+  const loader=document.getElementById("loader");
+  if(loader) loader.remove();
+},3000);
 </script>
+
+</body>
+</html>
